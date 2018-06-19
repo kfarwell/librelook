@@ -1,0 +1,184 @@
+#!/usr/local/plan9/bin/rc
+
+SEARCH_ENGINE='https://searx.me/?q='
+PKG_MANAGER='apt'
+
+fn read {
+	$1=`{awk '{print;exit}'}
+}
+ifs='
+'
+
+fn search {
+	xdg-open $SEARCH_ENGINE$* >/dev/null |[2] espeak &
+}
+fn google {
+	xdg-open 'https://www.google.com/search?q='$* >/dev/null |[2] espeak &
+}
+fn startpage {
+	xdg-open 'https://startpage.com/do/search?q='$* >/dev/null |[2] espeak &
+}
+fn ixquick {
+	xdg-open 'https://ixquick.com/do/search?q='$* >/dev/null |[2] espeak &
+}
+fn searx {
+	xdg-open 'https://searx.me/?q='$* >/dev/null |[2] espeak &
+}
+fn gigablast {
+	xdg-open 'https://gigablast.com/search?q='$* >/dev/null |[2] espeak &
+}
+fn baidu {
+	xdg-open 'https://www.baidu.com/s?wd='$* >/dev/null |[2] espeak &
+}
+fn yahoo {
+	xdg-open 'https://search.yahoo.com/search?p='$* >/dev/null |[2] espeak &
+}
+fn bing {
+	xdg-open 'https://www.bing.com/search?q='$* >/dev/null |[2] espeak &
+}
+fn ask {
+	xdg-open 'https://www.ask.com/web?q='$* >/dev/null |[2] espeak &
+}
+fn duckduckgo {
+	xdg-open 'https://duckduckgo.com/html?q='$* >/dev/null |[2] espeak &
+}
+fn wolframalpha {
+	xdg-open 'https://www.wolframalpha.com/input/?i='$* >/dev/null |[2] espeak &
+}
+fn yandex {
+	xdg-open 'https://www.yandex.com/search/text='$* >/dev/null |[2] espeak &
+}
+
+fn open {
+	exec $* >/dev/null |[2] espeak &
+}
+
+fn set {
+	switch($*) {
+		case 'search engine'*
+			switch($4) {
+				case google
+					SEARCH_ENGINE='https://www.google.com/search?q='
+				case startpage
+					SEARCH_ENGINE='https://startpage.com/do/search?q='
+				case ixquick
+					SEARCH_ENGINE='https://ixquick.com/do/search?q='
+				case searx
+					SEARCH_ENGINE='https://searx.me/?q='
+				case gigablast
+					SEARCH_ENGINE='https://gigablast.com/search?q='
+				case baidu
+					SEARCH_ENGINE='https://www.baidu.com/s?wd='
+				case yahoo
+					SEARCH_ENGINE='https://search.yahoo.com/search?p='
+				case bing
+					SEARCH_ENGINE='https://www.bing.com/search?q='
+				case ask
+					SEARCH_ENGINE='https://www.ask.com/web?q='
+				case duckduckgo
+					SEARCH_ENGINE='https://duckduckgo.com/html?q='
+				case wolframalpha
+					SEARCH_ENGINE='https://www.wolframalpha.com/input/?i='
+				case yandex
+					SEARCH_ENGINE='https://www.yandex.com/search/text='
+			}
+		case 'package manager'*
+			PKG_MANAGER=$4
+	}
+	echo $SEARCH_ENGINE $PKG_MANAGER
+}
+
+fn where {
+	if (~ $* 'am i')
+		espeak 'I don''t know.'
+	if not if (~ $1 'is')
+		{ xdg-open 'https://www.openstreetmap.org/search?query='`{echo $* | sed 's/'$1' //; s/ /%20/g'} >/dev/null |[2] espeak & }
+	if not
+		espeak 'I don''t understand.'
+}
+
+fn install {
+	switch($PKG_MANAGER) {
+		case apt
+			sudo apt-get install $*
+		case yum
+			sudo yum install $*
+		case portage
+			sudo emerge $*
+		case slapt-get
+			sudo slapt-get --install $*
+		case pacman
+			sudo pacman -S $*
+		case openbsd
+			sudo pkg_add $*
+		case homebrew
+			sudo brew install $*
+		case macports
+			sudo port install $*
+	}
+	espeak 'Done installing '$*'. Would you like to open it now?'
+	read confirm
+	if (~ $confirm 'yes')
+		open $*
+}
+
+fn uninstall {
+	switch($PKG_MANAGER) {
+		case apt
+			sudo apt-get remove $*
+		case yum
+			sudo yum remove $*
+		case portage
+			sudo emerge -C $*
+		case slapt-get
+			sudo slapt-get --remove $*
+		case pacman
+			sudo pacman -R $*
+		case openbsd
+			sudo pkg_delete $*
+		case homebrew
+			sudo brew remove $*
+		case macports
+			sudo port uninstall $*
+	}
+}
+
+switch($1) {
+	case search
+		search `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case google
+		google  `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case startpage
+		startpage  `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case ixquick
+		ixquick  `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case searx
+		searx  `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case gigablast
+		 gigablast `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case baidu
+		baidu  `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case yahoo
+		yahoo  `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case bing
+		bing  `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case ask
+		ask  `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case duckduckgo
+		duckduckgo  `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case wolframalpha
+		wolframalpha  `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+	case yandex
+		yandex  `{echo $* | sed 's/'$1' //; s/ /%20/g'}
+
+	case open
+		open `{echo $* | sed 's/'$1' //'}
+	case set
+		if (~ $4 'to') set `{echo $* | sed 's/'$1' //'}
+	case where
+		where `{echo $* | sed 's/'$1' //'}
+	case install
+		install `{echo $* | sed 's/'$1' //'}
+	case *
+		espeak 'I don''t understand.'
+}
