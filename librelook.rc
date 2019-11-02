@@ -1,4 +1,5 @@
 #!/usr/local/plan9/bin/rc
+# License: ISC
 
 SEARCH_ENGINE='https://searx.me/?q='
 PKG_MANAGER='apt'
